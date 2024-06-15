@@ -14,12 +14,6 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "vboost.addCodeCompletition",
-        "title": "v-boost - Autocomplete"
-      }
-    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -32,14 +26,15 @@
     "views": {
       "vboost_views": [
         {
+          "type": "webview",
           "id": "vboostView",
-          "name": "Configuration"
+          "name": "VBoost"
         }
       ]
     },
     "configuration": {
       "type": "object",
-      "title": "VBoost Data",
+      "title": "VBoost",
       "properties": {
         "vboost.formData": {
           "type": "object",
