@@ -10,7 +10,7 @@ import {
     TextDocument 
 } from 'vscode';
 
-import { sleep } from './sleep';
+import { sleep } from '../sleep';
 
 export default class InlineSuggestionProvider implements InlineCompletionItemProvider {
 

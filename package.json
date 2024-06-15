@@ -9,7 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": ["*"],
+  "activationEvents": [
+    "*"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -18,14 +20,44 @@
         "title": "v-boost - Autocomplete"
       }
     ],
-    "keybindings": [
-      {
-        "command": "vboost.addCodeCompletition",
-        "key": "ctrl+space",
-        "mac": "cmd+space",
-        "when": "editorTextFocus"
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "vboost_views",
+          "title": "VBoost",
+          "icon": "media/v.png"
+        }
+      ]
+    },
+    "views": {
+      "vboost_views": [
+        {
+          "id": "vboostView",
+          "name": "Configuration"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "VBoost Data",
+      "properties": {
+        "vboost.formData": {
+          "type": "object",
+          "default": {},
+          "description": "User data",
+          "properties": {
+            "email": {
+              "type": "string",
+              "default": ""
+            },
+            "apiKey": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        }
       }
-    ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
