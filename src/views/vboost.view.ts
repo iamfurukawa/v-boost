@@ -1,16 +1,20 @@
 import * as vscode from 'vscode';
 import AuthorizedPage from './authorized/authorized.page';
 import UnauthorizedPage from './unauthorized/unauthorized.page';
+import AuthenticationService from '../services/auth.service';
 
 class VBoostViewProvider implements vscode.WebviewViewProvider {
+    private webviewView?: vscode.WebviewView;
+
     constructor(readonly context: vscode.ExtensionContext) { }
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
+        this.webviewView = webviewView;
         webviewView.webview.options = {
             enableScripts: true
         };
 
-        webviewView.webview.html = this.getHtmlForWebview(webviewView.webview);
+        this.updateWebviewContent();
 
         webviewView.webview.onDidReceiveMessage(message => {
             switch (message.command) {
@@ -25,7 +29,7 @@ class VBoostViewProvider implements vscode.WebviewViewProvider {
     }
 
     private getHtmlForWebview(webview: vscode.Webview): string {
-        const config = vscode.workspace.getConfiguration('vboost.formData');
+        const config = vscode.workspace.getConfiguration('vboost.data');
         const apiKey = config.get<string>('apiKey');
 
         if (apiKey) {
@@ -35,19 +39,25 @@ class VBoostViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    private updateWebviewContent() {
+        if (this.webviewView) {
+            this.webviewView.webview.html = this.getHtmlForWebview(this.webviewView.webview);
+        }
+    }
 
-    private handleLogin(email: string, password: string) {
-        // Simulate API key retrieval
-        const apiKey = 'dummy-api-key';
+    private async handleLogin(email: string, password: string) {
+        const { apiKey } = await AuthenticationService.signIn(email, password);
         const config = vscode.workspace.getConfiguration();
-        config.update('vboost.formData', { email, apiKey }, vscode.ConfigurationTarget.Global);
-        vscode.commands.executeCommand('workbench.action.reloadWindow');
+        config.update('vboost.data', { email, apiKey }, vscode.ConfigurationTarget.Global).then(() => {
+            this.updateWebviewContent();
+        });
     }
 
     private handleLogout() {
         const config = vscode.workspace.getConfiguration();
-        config.update('vboost.formData', { email: '', apiKey: '' }, vscode.ConfigurationTarget.Global);
-        vscode.commands.executeCommand('workbench.action.reloadWindow');
+        config.update('vboost.data', { email: '', apiKey: '' }, vscode.ConfigurationTarget.Global).then(() => {
+            this.updateWebviewContent();
+        });
     }
 }
 
